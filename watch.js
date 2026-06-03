@@ -229,7 +229,7 @@ console.log('watch.js executing - start');
       '    <div class="loading-overlay active" id="playerSectionLoading"><span class="loading-overlay-text">جاري التحميل…</span></div>',
       '    <div class="content">',
       '      <div class="player-container" id="playerContainer">',
-      '        '        <iframe id="videoPlayer" src=""',
+      '        <iframe id="videoPlayer" src=""',
 '          allow="autoplay; encrypted-media; fullscreen *; picture-in-picture; clipboard-write; web-share"',
 '          allowfullscreen="true" webkitallowfullscreen="true" mozallowfullscreen="true"',
 '          frameborder="0" scrolling="no"',
