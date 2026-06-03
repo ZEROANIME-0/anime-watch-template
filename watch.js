@@ -228,9 +228,11 @@
       '    <div class="loading-overlay active" id="playerSectionLoading"><span class="loading-overlay-text">جاري التحميل…</span></div>',
       '    <div class="content">',
       '      <div class="player-container" id="playerContainer">',
-      '        <iframe id="videoPlayer" src="" allow="autoplay;encrypted-media;fullscreen;picture-in-picture"',
-      '          sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-presentation allow-pointer-lock"',
-      '          referrerpolicy="no-referrer-when-downgrade" loading="lazy" style="opacity:0;pointer-events:none;"></iframe>',
+      '        '        <iframe id="videoPlayer" src=""',
+'          allow="autoplay; encrypted-media; fullscreen *; picture-in-picture; clipboard-write; web-share"',
+'          allowfullscreen="true" webkitallowfullscreen="true" mozallowfullscreen="true"',
+'          frameborder="0" scrolling="no"',
+'          referrerpolicy="no-referrer-when-downgrade" loading="lazy" style="opacity:0;pointer-events:none;"></iframe>',
       '        <div class="player-placeholder" id="playerPlaceholder">',
       '          <div class="player-placeholder-icon"><i class="fas fa-play"></i></div>',
       '          <div class="player-placeholder-text">اضغط لاختيار سيرفر للمشاهدة</div>',
@@ -704,7 +706,43 @@
     if (D.contactLink)      D.contactLink.href       = normalizeUrl(CONFIG.CONTACT_URL    || '');
     if (D.reportBtn)        D.reportBtn.href         = normalizeUrl(CONFIG.REPORT_URL     || '');
   }
+  function handleFullscreen() {
+    var iframe = D.videoPlayer;
+    var container = D.playerContainer;
+    if (!iframe || !container) return;
 
+    function onFullscreenChange() {
+      var isFS = !!(
+        document.fullscreenElement ||
+        document.webkitFullscreenElement ||
+        document.mozFullScreenElement ||
+        document.msFullscreenElement
+      );
+      if (isFS) {
+        iframe.style.cssText = 'position:fixed!important;top:0!important;left:0!important;width:100vw!important;height:100vh!important;z-index:99999!important;background:#000!important;border-radius:0!important;opacity:1!important;pointer-events:auto!important;';
+        container.style.cssText = 'position:fixed!important;top:0!important;left:0!important;width:100vw!important;height:100vh!important;z-index:99998!important;padding:0!important;background:#000!important;border-radius:0!important;';
+      } else {
+        iframe.style.cssText = 'opacity:1;pointer-events:auto;';
+        container.style.cssText = '';
+      }
+    }
+
+    document.addEventListener('fullscreenchange',       onFullscreenChange);
+    document.addEventListener('webkitfullscreenchange', onFullscreenChange);
+    document.addEventListener('mozfullscreenchange',    onFullscreenChange);
+    document.addEventListener('MSFullscreenChange',     onFullscreenChange);
+
+    window.addEventListener('message', function(e) {
+      if (!e.data) return;
+      var d = typeof e.data === 'string' ? e.data : JSON.stringify(e.data);
+      if (d.indexOf('fullscreen') !== -1 || d.indexOf('requestFullscreen') !== -1) {
+        if (container.requestFullscreen)            container.requestFullscreen();
+        else if (container.webkitRequestFullscreen) container.webkitRequestFullscreen();
+        else if (container.mozRequestFullScreen)    container.mozRequestFullScreen();
+        else if (container.msRequestFullscreen)     container.msRequestFullscreen();
+      }
+    });
+  }
   function initEvents() {
     [D.watchModeToggle, D.watchModeFloating].forEach(function (b) { if (b) b.addEventListener('click', WatchApp.toggleWatchMode); });
     if (D.playerPlaceholder) D.playerPlaceholder.addEventListener('click', function () { scrollToEl(D.serversSection); });
@@ -716,7 +754,15 @@
       if (['INPUT','TEXTAREA','SELECT'].indexOf(e.target.tagName) !== -1) return;
       if (e.key === 'ArrowRight' && D.prevEpisode && !D.prevEpisode.disabled) { e.preventDefault(); D.prevEpisode.click(); }
       if (e.key === 'ArrowLeft'  && D.nextEpisode && !D.nextEpisode.disabled) { e.preventDefault(); D.nextEpisode.click(); }
-      if (e.key === 'w' || e.key === 'W') { e.preventDefault(); WatchApp.toggleWatchMode(); }
+     if (e.key === 'w' || e.key === 'W') { e.preventDefault(); WatchApp.toggleWatchMode(); }
+      if ((e.key === 'f' || e.key === 'F') && D.playerContainer && State.playerActive) {
+        e.preventDefault();
+        var c = D.playerContainer;
+        if (c.requestFullscreen)            c.requestFullscreen();
+        else if (c.webkitRequestFullscreen) c.webkitRequestFullscreen();
+        else if (c.mozRequestFullScreen)    c.mozRequestFullScreen();
+        else if (c.msRequestFullscreen)     c.msRequestFullscreen();
+      }
     });
     var rt;
     window.addEventListener('resize', function () {
@@ -730,6 +776,7 @@
     var ok = initConfig();
     initLinks();
     initEvents();
+   handleFullscreen();
     if (ok) WatchApp.loadData();
     else if (D.mainContent) D.mainContent.innerHTML = '<div class="unified-card error-placeholder" style="margin:20px"><i class="fas fa-cog"></i><h3 style="margin:8px 0">إعداد غير مكتمل</h3><p style="color:var(--text-tertiary)">يرجى ملء USER_CONFIG: ANIME_NAME و EPISODE_NUM و MAIN_API_URL</p></div>';
   }
