@@ -223,6 +223,24 @@ button:disabled { opacity: 0.4; cursor: not-allowed; }
 .player-container { position: relative; width: 100%; padding-top: 56.25%; background: transparent; overflow: visible; border: none; box-shadow: none; border-radius: var(--radius-lg); margin: 0; }
 .player-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; display: block; background: #000; border-radius: var(--radius-lg); touch-action: manipulation; -webkit-touch-callout: none; -webkit-user-select: none; user-select: none; box-shadow: var(--shadow-player); transition: box-shadow var(--transition); }
 .player-container iframe:hover { box-shadow: 0 12px 40px rgba(0, 0, 0, 0.7); }
+/* ===== FULLSCREEN FIX ===== */
+.player-container:-webkit-full-screen,
+.player-container:fullscreen {
+  width: 100vw !important; height: 100vh !important;
+  padding: 0 !important; position: fixed !important;
+  top: 0 !important; left: 0 !important; z-index: 99999 !important;
+  background: #000 !important; border-radius: 0 !important;
+}
+#videoPlayer:-webkit-full-screen,
+#videoPlayer:-moz-full-screen,
+#videoPlayer:-ms-fullscreen,
+#videoPlayer:fullscreen {
+  width: 100vw !important; height: 100vh !important;
+  position: fixed !important; top: 0 !important; left: 0 !important;
+  z-index: 99999 !important; background: #000 !important;
+  border-radius: 0 !important;
+}
+/* ===== END FULLSCREEN FIX ===== */
 .player-placeholder { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, #1a1a2e 0%, #0f0f1a 50%, #1a1a2e 100%); border-radius: var(--radius-lg); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 20px; z-index: 10; cursor: pointer; transition: background var(--transition), border-color var(--transition), box-shadow var(--transition); border: 1px solid var(--border-subtle); }
 .player-placeholder:hover { background: linear-gradient(135deg, #1f1f35 0%, #141425 50%, #1f1f35 100%); border-color: var(--color-primary); box-shadow: var(--shadow-glow); }
 .player-placeholder.hidden { display: none !important; }
