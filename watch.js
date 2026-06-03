@@ -2,6 +2,7 @@
  * Watch Page JS - Centralized Template v1.0
  * يبني كامل صفحة المشاهدة ديناميكياً
  */
+console.log('watch.js executing - start');
 (function () {
   'use strict';
 
@@ -785,3 +786,4 @@
   else init();
 
 })();
+console.log('watch.js executing - end');
